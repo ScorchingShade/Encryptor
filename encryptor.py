@@ -14,13 +14,15 @@ class Encrypto:
 
     def __password(self, str):
         while True:
-             if 6 <= len(str):
+            if 6 <= len(str):
                 break
                 print('The password must be between 6 and 12 characters.\n')
         password_scores = {0: 'Horrible', 1: 'Weak', 2: 'Medium', 3: 'Strong'}
 
-        password_strength = dict.fromkeys(['has_upper', 'has_lower', 'has_num'],
-                                            False)
+        password_strength = dict.fromkeys(['has_upper',
+                                           'has_lower',
+                                           'has_num'],
+                                          False)
 
         if re.search(r'[A-Z]', str):
             password_strength['has_upper'] = True
