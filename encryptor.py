@@ -10,37 +10,33 @@ import getpass
 import passwordmeter
 import re
 
-
 class Encrypto:
 
     def __password(self, str):
         while True:
-
              if 6 <= len(str):
                 break
                 print('The password must be between 6 and 12 characters.\n')
-
         password_scores = {0: 'Horrible', 1: 'Weak', 2: 'Medium', 3: 'Strong'}
 
-        password_strength = dict.fromkeys(['has_upper', 'has_lower', 'has_num'], False)
+        password_strength = dict.fromkeys(['has_upper', 'has_lower', 'has_num'],
+                                            False)
+
         if re.search(r'[A-Z]', str):
-                password_strength['has_upper'] = True
+            password_strength['has_upper'] = True
         if re.search(r'[a-z]', str):
-                password_strength['has_lower'] = True
+            password_strength['has_lower'] = True
         if re.search(r'[0-9]', str):
-                password_strength['has_num'] = True
+            password_strength['has_num'] = True
 
         score = len([b for b in password_strength.values() if b])
 
         print('Password is %s' % password_scores[score])
 
-
-
     def _input_(self):
         user_id = input('\nEnter the account name/User id for which you want the password to be made:\n')
         user_pass = getpass.getpass('\nEnter the password you wish to test:\n')
         print('Password entered:', user_pass)
-        Encrypto.__password(Encrypto,user_pass)
-
+        Encrypto.__password(Encrypto, user_pass)
 
 Encrypto._input_(Encrypto)
