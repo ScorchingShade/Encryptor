@@ -12,11 +12,11 @@ import re
 
 class Encrypto:
 
-    def __password(self, str):
+    def __password(self, password_str):
         while True:
-            if 6 <= len(str):
-                break
+            if 6 <= len(password_str):
                 print('The password must be between 6 and 12 characters.\n')
+                break
         password_scores = {0: 'Horrible', 1: 'Weak', 2: 'Medium', 3: 'Strong'}
 
         password_strength = dict.fromkeys(['has_upper',
@@ -24,11 +24,11 @@ class Encrypto:
                                            'has_num'],
                                           False)
 
-        if re.search(r'[A-Z]', str):
+        if re.search(r'[A-Z]', password_str):
             password_strength['has_upper'] = True
-        if re.search(r'[a-z]', str):
+        if re.search(r'[a-z]', password_str):
             password_strength['has_lower'] = True
-        if re.search(r'[0-9]', str):
+        if re.search(r'[0-9]', password_str):
             password_strength['has_num'] = True
 
         score = len([b for b in password_strength.values() if b])
