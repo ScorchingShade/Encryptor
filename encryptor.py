@@ -7,14 +7,14 @@
 6) Feature to store it in cloud-- Dropbox or google Drive
 '''
 import getpass
-import passwordmeter
 import re
+import passwordmeter
 
 class Encrypto:
 
     def __password(self, password_str):
         while True:
-            if 6 <= len(password_str):
+            if len(password_str) <= 6:
                 print('The password must be between 6 and 12 characters.\n')
                 break
         password_scores = {0: 'Horrible', 1: 'Weak', 2: 'Medium', 3: 'Strong'}
