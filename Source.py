@@ -26,6 +26,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 
 class Encrypto:
 
+    version="1.0"
     username=""
     password=""
     fileName="PASS.txt"
