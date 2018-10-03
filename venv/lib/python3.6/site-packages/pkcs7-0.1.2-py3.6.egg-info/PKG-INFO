@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: pkcs7
+Version: 0.1.2
+Summary: extension class for argparse with json configuration
+Home-page: http://github.com/jeppeter/extargsparse
+Author: jeppeter Wang
+Author-email: jeppeter@gmail.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
