@@ -35,7 +35,7 @@ class Encrypto:
     def __init__(self):
         print("################################### WELCOME TO THE ENCRYPTOR BY AINC########################################\n\n\t\t\t\t\tThis is your own mobile vault")
 
-        self.username=input("\nPlease enter the username you wish to for a password for: \n")
+        self.username=input("\nPlease enter the username you wish to add for encryption: \n")
         self.password=getpass.getpass("\nPlease enter the password to evaluate: \n")
         print("We shall now be storing your password securely in a file...initialising setup please wait..")
 
@@ -74,6 +74,8 @@ class Encrypto:
                 f.write(encrypted_key)
             with open('my_rsa_public_key.pem','wb') as f:
                 f.write(R_enc_key.publickey().exportKey())
+        else:
+            print("\nNo Problem! Let's do this again someday!")
 
 
 
