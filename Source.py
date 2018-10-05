@@ -32,6 +32,7 @@ class Encrypto:
     fileName="PASS.txt"
     Key=""
 
+    #initialising innput for username and password, storing them in a temporary text file . In case of no encryption the text file will persist in the user's system
     def __init__(self):
         print("################################### WELCOME TO THE ENCRYPTOR BY AINC########################################\n\n\t\t\t\t\tThis is your own mobile vault")
 
@@ -40,11 +41,13 @@ class Encrypto:
         print("We shall now be storing your password securely in a file...initialising setup please wait..")
 
         f = open(self.fileName, "w+")
-        bar = Bar('Adding to file', max=5)
+
+        #Progress bar to add a little bling
+        bar = Bar('Adding to file', max=3)
         f.write('############################################### Welcome to The VAULT ##########################################')
         f.write('\n\n##########UserName##########\n' + self.username)
         f.write('\n\n##########Password##########\n' + self.password)
-        for i in range(5):
+        for i in range(3):
             # Do some work
             sleep(1)
             bar.next()
@@ -52,6 +55,7 @@ class Encrypto:
         f.close()
 
 
+    #Generate RSA KEY to allow encryption
     def RSA_gen(self):
         print("\n\n**************************************Initialising Encryption*****************************************************\nBefore beginning you might want to check out the following points\n1) Encryption is a highly detailed and memory intensive process , be sure to have minimum hardware requirements before running the Encryptor.\n2) We at AINC are not responsible for any loss of data in case of loss of The Key of your encypted file.\n3) Make sure to never send The Key over internet or any media.\n")
         choice=input("Do you want to continue? (y/n):\n")
@@ -62,6 +66,8 @@ class Encrypto:
                 # Do some work
                 sleep(1)
                 bar.next()
+
+            #Generating the passphrase for key pair generation
             Key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
             self.Key=Key
 
@@ -78,7 +84,7 @@ class Encrypto:
             print("\nNo Problem! Let's do this again someday!")
 
 
-
+    #A basic password evaluator to check the password strength
     def Evaluator(self):
 
         passw=self.password
@@ -112,6 +118,7 @@ class Encrypto:
                 print(
                     "\nYour password score is: Awesome!\nThis password activates god mode! Congrats you are protected!\nDon't forget to change your password regularly to prevent any hacks!\n")
 
+    #Encryption using AES OAEP
     def encrypt(self):
         # the chunksize is basically the amount of data being read at a time
         chunksize=64*1024
@@ -120,14 +127,16 @@ class Encrypto:
             with open('AINC_encrypted_File.bin','wb') as outfile:
                 recipient_key = RSA.import_key(
                     open(pub_key).read())
+                #IN OAEP we have to generate a random string to fill in the encryption, we have used a 16 byte string here
                 session_key = get_random_bytes(16)
 
+                #Cipher will be used to encrypt the data using the public key.
                 cipher_rsa = PKCS1_OAEP.new(recipient_key)
                 outfile.write(cipher_rsa.encrypt(session_key))
 
                 cipher_aes = AES.new(session_key, AES.MODE_EAX)
 
-
+                #reading the text file as a chunk of bytes at a time and allowing encryption for the same
                 while True:
                     chunk = infile.read(chunksize)
                     if len(chunk) == 0:
@@ -151,7 +160,7 @@ class Encrypto:
                     print("Successfully completed encrypting the file!")
 
 
-
+    #Decrypting the data
     def decrypt(self):
 
         Key=input("Enter your secret Key:\n")
