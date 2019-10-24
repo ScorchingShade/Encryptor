@@ -1,6 +1,7 @@
 # Encryptor
 A password encryptor package for  Linux
 
+>Complete revamp coming soon!
 >This is a powerful software to be used only at user's risk.
 >RSA and AES encrytion techniques ensure that your data is secure and safe. 
 >A menu driven program to easily begin using The Encryptor.
