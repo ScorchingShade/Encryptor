@@ -23,10 +23,10 @@ $ python3 Source.py
   
 
 ## Dependencies
-You must have Python 3.x and Pycryptodome installed. In addition to this, several custom packages are included in the bin folder of the Repository.. 
+You must have Python 3.x with `pycryptodome` and `progress` installed. To install these packages, run the following command:
 ```sh
- pip install pycryptodome 
- ```
+pip install -r requirements.txt 
+```
  
  Leave a star and check out more amazing codes by Ankush Sharma
 
