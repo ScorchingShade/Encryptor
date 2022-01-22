@@ -15,6 +15,9 @@ import os
 import time
 from time import sleep
 from progress.bar import Bar
+import tkinter as tk
+from tkinter import ttk
+from tkinter import filedialog as fd
 
 import getpass
 import re
@@ -23,6 +26,7 @@ from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 
+encryptor = None
 
 class Encrypto:
 
@@ -33,11 +37,16 @@ class Encrypto:
     Key=""
 
     #initialising innput for username and password, storing them in a temporary text file . In case of no encryption the text file will persist in the user's system
-    def __init__(self):
+    def __init__(self, options):
         print("################################### WELCOME TO THE ENCRYPTOR BY AINC########################################\n\n\t\t\t\t\tThis is your own mobile vault")
 
-        self.username=input("\nPlease enter the username you wish to add for encryption: \n")
-        self.password=getpass.getpass("\nPlease enter the password to evaluate: \n")
+        if(options != None):
+            self.username=options["username"]
+            self.password=options["password"]
+        else:
+            self.username=input("\nPlease enter the username you wish to add for encryption: \n")
+            self.password=getpass.getpass("\nPlease enter the password to evaluate: \n")
+        
         print("We shall now be storing your password securely in a file...initialising setup please wait..")
 
         f = open(self.fileName, "w+")
@@ -56,11 +65,11 @@ class Encrypto:
 
 
     #Generate RSA KEY to allow encryption
-    def RSA_gen(self):
+    def RSA_gen(self, gui):
         print("\n\n**************************************Initialising Encryption*****************************************************\nBefore beginning you might want to check out the following points\n1) Encryption is a highly detailed and memory intensive process , be sure to have minimum hardware requirements before running the Encryptor.\n2) We at AINC are not responsible for any loss of data in case of loss of The Key of your encypted file.\n3) Make sure to never send The Key over internet or any media.\n")
-        choice=input("Do you want to continue? (y/n):\n")
+       
 
-        if choice=='y' or choice == 'Y' or choice == 'Yes' or choice == 'yes' or choice == 'YES':
+        if(gui):
             bar = Bar('Generating Secure Key', max=2)
             for i in range(2):
                 # Do some work
@@ -78,10 +87,36 @@ class Encrypto:
             encrypted_key = R_enc_key.exportKey(passphrase=self.Key, pkcs=8,protection="scryptAndAES128-CBC")
             with open('my_private_rsa_key.bin','wb') as f:
                 f.write(encrypted_key)
+                f.close()
             with open('my_rsa_public_key.pem','wb') as f:
                 f.write(R_enc_key.publickey().exportKey())
+                f.close()
         else:
-            print("\nNo Problem! Let's do this again someday!")
+            choice=input("Do you want to continue? (y/n):\n")
+            if choice=='y' or choice == 'Y' or choice == 'Yes' or choice == 'yes' or choice == 'YES':
+                bar = Bar('Generating Secure Key', max=2)
+                for i in range(2):
+                    # Do some work
+                    sleep(1)
+                    bar.next()
+
+                #Generating the passphrase for key pair generation
+                Key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+                self.Key=Key
+
+                print("\n\nThis shall be your key that you may use for decrypting your file, keep it safe and NEVER share it with any unauthorized person/software. \n" + Key)
+                bar.finish()
+
+                R_enc_key = RSA.generate(2048)
+                encrypted_key = R_enc_key.exportKey(passphrase=self.Key, pkcs=8,protection="scryptAndAES128-CBC")
+                with open('my_private_rsa_key.bin','wb') as f:
+                    f.write(encrypted_key)
+                    f.close()
+                with open('my_rsa_public_key.pem','wb') as f:
+                    f.write(R_enc_key.publickey().exportKey())
+                    f.close()
+            else:
+                print("\nNo Problem! Let's do this again someday!")
 
 
     #A basic password evaluator to check the password strength
@@ -119,10 +154,14 @@ class Encrypto:
                     "\nYour password score is: Awesome!\nThis password activates god mode! Congrats you are protected!\nDon't forget to change your password regularly to prevent any hacks!\n")
 
     #Encryption using AES OAEP
-    def encrypt(self):
+    def encrypt(self, path):
         # the chunksize is basically the amount of data being read at a time
         chunksize=64*1024
-        pub_key=input("Enter the path to your public key:(e.g /home/pub_key.pem)\n")
+        if(path != None):
+            pub_key = path
+        else:
+            pub_key=input("Enter the path to your public key:(e.g /home/pub_key.pem)\n")
+        
         with open('PASS.txt','rb') as infile:
             with open('AINC_encrypted_File.bin','wb') as outfile:
                 recipient_key = RSA.import_key(
@@ -150,7 +189,7 @@ class Encrypto:
                     outfile.write(tag)
                     outfile.write(ciphertext)
 
-                    os.remove("PASS.txt")
+                    
                     bar = Bar('Encrypting File', max=2)
                     for i in range(2):
                         # Do some work
@@ -158,12 +197,20 @@ class Encrypto:
                         bar.next()
                     bar.finish()
                     print("Successfully completed encrypting the file!")
+                
+                infile.close()
+                outfile.close()
+                os.remove("PASS.txt")
 
 
     #Decrypting the data
-    def decrypt(self):
-
-        Key=input("Enter your secret Key:\n")
+    def decrypt(self, path):
+        if(path != None):
+            with open(path, 'rb') as key_file:
+                Key = key_file.read()
+                key_file.close()
+        else:
+            Key=input("Enter your secret Key:\n")
         with open('AINC_encrypted_File.bin','rb') as fobj:
             with open('decrypted.txt','wb') as outfile:
                 private_key= RSA.import_key(open('my_private_rsa_key.bin').read(),passphrase=Key)
@@ -189,27 +236,128 @@ class Encrypto:
                 bar.finish()
                 print("Successfully completed Decrypting the file!")
 
+        fobj.close()
+        outfile.close()
 
 
+def options(choice):
+    if(choice==1):
+        encryptor.Evaluator()
+    elif(choice==2):
+        select_encrypt()
+    elif(choice==3):
+        select_decrypt()
+    elif(choice==4):
+        encryptor.RSA_gen(True)
+    elif(choice==5):
+        print("\nThank you for using the Encryptor by AINC! Hope to see you soon!")
+        exit(1)
+    else:
+        print("Wrong input, please enter again!")
+
+def set_encrypto(options):
+    global encryptor
+    encryptor = Encrypto(options)
+
+def select_encrypt():
+    filetypes = (
+        ('All files', '*.*'),
+        ('text files', '*.txt')
+    )
+
+    selected_file = fd.askopenfilename(
+        title='Select a file',
+        initialdir='/',
+        filetypes=filetypes)
+
+    encryptor.encrypt(selected_file)
+
+def select_decrypt():
+    filetypes = (
+        ('All files', '*.*'),
+        ('text files', '*.txt')
+    )
+
+    selected_file = fd.askopenfilename(
+        title='Select a file',
+        initialdir='/',
+        filetypes=filetypes)
+
+    encryptor.decrypt(selected_file)
 
 if __name__== "__main__":
-    e=Encrypto()
-    #e.Evaluator()
-    print("\nGreat Job! Now that we have our setup successfully initialised, what would you like to do?")
-    while True:
-        choice = input(
-            "\n1) Get the current password appraised.\n2) Encrypt your current Username and Password File.\n3) Decrypt an existing file (Secret key needed)\n4) Generate a new RSA key pair. \n5) Quit for now.\n(Enter your choices as 1-5)\n")
+    # Setup window
+    window = tk.Tk()
+    window.title("Encryptor")
+    window.geometry('400x400')
 
-        if(choice=="1"):
-            e.Evaluator()
-        elif(choice=="2"):
-            e.encrypt()
-        elif(choice=="3"):
-            e.decrypt()
-        elif(choice=="4"):
-            e.RSA_gen()
-        elif(choice=="5"):
-            print("\nThank you for using the Encryptor by AINC! Hope to see you soon!")
-            exit(1)
-        else:
-            print("Wrong input, please enter again!")
+    tk.Label(window, text="Username: ").grid(row=1, column=0)
+    username_field = tk.Entry(window)
+    username_field.grid(row=1, column=1)
+
+    tk.Label(window, text="Password: ").grid(row=2, column=0)
+    password_field = tk.Entry(window)
+    password_field.grid(row=2, column=1)
+
+    submit_button = ttk.Button(
+        window,
+        text='Submit',
+        command=lambda: set_encrypto({"username":username_field.get(), "password":password_field.get()})
+    )
+
+    submit_button.grid(row=3, column=1)
+
+    tk.Label(window, text="Options:").grid(row=5, column=0)
+
+    # Appraise Password
+    appraise_button = ttk.Button(
+        window,
+        text='Appraise Password',
+        command=lambda: options(1)
+    )
+
+    appraise_button.grid(row=6, column=0)
+
+    # Encrypt Username and Password
+    encrypt_button = ttk.Button(
+        window,
+        text='Encrypt Username and Password',
+        command=lambda: options(2)
+    )
+
+    encrypt_button.grid(row=7, column=0)
+
+    # Decrypt an existing file
+    decrypt_button = ttk.Button(
+        window,
+        text='Decrypt file',
+        command=lambda: options(3)
+    )
+
+    decrypt_button.grid(row=8, column=0)
+
+    # Generate Key Pair
+    generate_key_pair_button = ttk.Button(
+        window,
+        text='Generate Key Pair',
+        command=lambda: options(4)
+    )
+
+    generate_key_pair_button.grid(row=9, column=0)
+
+    # Quit
+    quit_button = ttk.Button(
+        window,
+        text='Quit',
+        command=lambda: options(5)
+    )
+
+    quit_button.grid(row=10, column=0)
+
+
+
+    submit_button.grid(row=3, column=1)
+
+
+    window.mainloop()
+
