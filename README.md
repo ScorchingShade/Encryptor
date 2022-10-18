@@ -9,10 +9,29 @@ A password encryptor package for  Linux
 >The method ensures that while sending any credentials to authorised users, only they have the access to it.
 >Adding such methods allows you to provide true end to end encryption, without revealing any sensitive info.
 >Some features are explained below
-#### Commands to run on Terminal
-Use the following commands on Linux to run the Program
+#### Steps to run:
+1. Install Python 3.x on your Windows/Linux/Mac machine
+2. Install the virtual environment package 
 ```sh
-$ python3 Source.py 
+$ pip install virtualenv
+```
+3. Create a new virtual environment and activate it
+```sh
+$ virtualenv venv
+
+For Windows:
+$ venv\Scripts\activate
+For Linux:
+$ source venv/bin/activate
+```
+
+4. Install the required dependencies in the `venv`
+```sh
+$ pip install -r requirements.txt
+```
+5. Run the `source.py` file
+```sh
+$ py source.py
 ```
 
 ### Understanding The Encryptor
@@ -21,13 +40,6 @@ $ python3 Source.py
   - Optimal asymmetric encryption padding used for sturdier encryption.
   - 'Nonce' to ensure AES encryption.
   
-
-## Dependencies
-You must have Python 3.x and Pycryptodome installed. In addition to this, several custom packages are included in the bin folder of the Repository.. 
-```sh
- pip install pycryptodome 
- ```
- 
  Leave a star and check out more amazing codes by Ankush Sharma
 
 Reach out to me at ankushors789@gmail.com
